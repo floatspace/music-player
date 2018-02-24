@@ -20,3 +20,30 @@ export function getElAttr(el, name, val) {
     return el.getAttribute(prefix + name)
   }
 }
+
+let elmentStyle = document.createElement('div').style
+let vender = (function() {
+  let transformNames = {
+    standard: 'transform',
+    webkit: 'webkitTransform',
+    Moz: 'MozTransform',
+    O: 'OTransform',
+    ms: 'msTransform'
+  }
+  for (var k in transformNames) {
+    if (elmentStyle[transformNames[k]] !== 'undefined') {
+      return k
+    }
+  }
+  return false
+})()
+
+export function prefixStyle(style) {
+  if (vender === false) {
+    return false
+  }
+  if (vender === 'standard') {
+    return style
+  }
+  return vender + style.charAt(0).toUpperCase() + style.substr(1)
+}

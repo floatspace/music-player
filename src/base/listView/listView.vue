@@ -4,7 +4,7 @@
       <li class="list-group" v-for="(group,i) in data" :key="i" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li class="list-group-item" v-for="(item, k) in group.items" :key="k">
+          <li @click="singerHandler(item)" class="list-group-item" v-for="(item, k) in group.items" :key="k">
             <img class="avatar" v-lazy="item.avatar" alt="">
             <span class="name">{{item.name}}</span>
           </li>
@@ -61,6 +61,9 @@ export default {
     this.touch = {}
   },
   methods: {
+    singerHandler(singerData) {
+      this.$emit('selectSinger', singerData)
+    },
     onShortcutTouchStart(e) {
       let anchorIndex = getElAttr(e.target, 'index')
       // 空白区域过滤
