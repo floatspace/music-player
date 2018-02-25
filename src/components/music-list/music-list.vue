@@ -12,12 +12,16 @@
       <div class="song-list-wrapper">
         <SongList :songs="songs"></SongList>
       </div>
+      <div class="loading-container" v-if="!songs.length">
+        <Loading></Loading>
+      </div>
     </Scroll>
   </div>
 </template>
 <script>
 import Scroll from '@/base/scroll/scroll'
 import SongList from '@/components/song-list/song-list'
+import Loading from '@/base/loading/loading'
 import {prefixStyle} from 'common/js/dom'
 const TITLE_HEIGHT = 40
 const transform = prefixStyle('transform')
@@ -25,7 +29,8 @@ const backdrop = prefixStyle('backdrop-filter')
 export default {
   components: {
     Scroll,
-    SongList
+    SongList,
+    Loading
   },
   props: {
     songs: {

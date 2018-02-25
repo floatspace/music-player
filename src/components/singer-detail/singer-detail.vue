@@ -28,7 +28,6 @@ export default {
     ])
   },
   created() {
-    console.log(this.singer)
     this._getSingerSongs()
   },
   methods: {
@@ -41,14 +40,16 @@ export default {
         if (res.code === ERROR_OK) {
           this.songs = res.data.list
           this.songs = this._normallizeSongs(this.songs)
+          console.log(this.songs)
         }
       })
     },
     _normallizeSongs(songs) {
       let res = []
       songs.forEach((song) => {
-        let newSong = createSong(song.musicData)
-        res.push(newSong)
+        createSong(song.musicData).then((data) => {
+          res.push(data)
+        })
       })
       return res
     }
