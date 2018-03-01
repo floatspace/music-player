@@ -7,6 +7,7 @@ export default class Song {
     this.name = name
     this.img = img
     this.album = album
+    this.duration = duration
     this.singer = singer
     this.url = url
   }

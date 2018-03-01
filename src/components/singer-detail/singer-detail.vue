@@ -38,8 +38,7 @@ export default {
       }
       getSongs(this.singer.id).then((res) => {
         if (res.code === ERROR_OK) {
-          this.songs = res.data.list
-          this.songs = this._normallizeSongs(this.songs)
+          this.songs = this._normallizeSongs(res.data.list)
           console.log(this.songs)
         }
       })
