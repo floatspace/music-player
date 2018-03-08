@@ -5,7 +5,7 @@
     </div>
     <h1 class="title" v-html="title"></h1>
     <div class="bg-img" :style="bgStyle" ref="bgImg">
-      <div class="play-wrapper" @click="play">
+      <div class="play-wrapper" @click="play" ref="playRandom">
         <div class="play">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
@@ -103,10 +103,12 @@ export default {
         zIndex = 10
         bgImg.style.paddingTop = 0
         bgImg.style.height = `${TITLE_HEIGHT}px`
+        this.$refs.playRandom.style.display = 'none'
       } else {
         zIndex = 0
         bgImg.style.paddingTop = '70%'
         bgImg.style.height = 0
+        this.$refs.playRandom.style.display = 'block'
       }
       // 计算下拉图片放大比例
       const percent = Math.abs(-newY / this.imgHeight)

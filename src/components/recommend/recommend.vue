@@ -1,36 +1,40 @@
 <template>
-  <Scroll ref="scroll" :data="playList" class="recommend-content">
-    <div>
-      <div v-if="sliders.length" class="slider-wrapper">
-        <Slider>
-          <div v-for="(item, k) in sliders" :key="k">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" alt="">
-            </a>
-          </div>
-        </Slider>
-      </div>
-      <div class="recommend-list">
-        <h1 class="list-title">热门歌单推荐</h1>
-        <ul>
-          <li class="item" v-for="(item,index) in playList" :key="index">
-            <div class="icon">
-              <img @loadImg="loadImg" v-lazy="item.imgurl" width="60" height="60" alt="">
+  <div>
+    <Scroll ref="scroll" :data="playList" class="recommend-content">
+      <div>
+        <div v-if="sliders.length" class="slider-wrapper">
+          <Slider>
+            <div v-for="(item, k) in sliders" :key="k">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" alt="">
+              </a>
             </div>
-            <div class="text">
-              <h2 class="name" v-html="item.creator.name"></h2>
-              <p class="desc">{{item.dissname}}</p>
-            </div>
-          </li>
-        </ul>
+          </Slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li @click="selectItem(item)" class="item" v-for="(item,index) in playList" :key="index">
+              <div class="icon">
+                <img @loadImg="loadImg" v-lazy="item.imgurl" width="60" height="60" alt="">
+              </div>
+              <div class="text">
+                <h2 class="name" v-html="item.creator.name"></h2>
+                <p class="desc">{{item.dissname}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="loading-container" v-if="!playList.length">
-      <Loading></Loading>
-    </div>
-  </Scroll>
+      <div class="loading-container" v-if="!playList.length">
+        <Loading></Loading>
+      </div>
+    </Scroll>
+    <router-view></router-view>
+  </div>
 </template>
 <script>
+import {mapMutations} from 'vuex'
 import {getSlides, getPlayList} from 'api/getRecommend'
 import {ERROR_OK} from 'api/config'
 import Scroll from '@/base/scroll/scroll'
@@ -53,6 +57,14 @@ export default {
     this._getPlayList()
   },
   methods: {
+    selectItem(item) {
+      if (!item.dissid) {
+        this.$router.push('/recommend')
+        return
+      }
+      this.setDisc(item)
+      this.$router.push('/recommend/' + item.dissid)
+    },
     _getSliders() {
       let self = this
       getSlides().then(function(data) {
@@ -66,7 +78,7 @@ export default {
     _getPlayList() {
       getPlayList().then((data) => {
         if (data.code === ERROR_OK) {
-          console.log(data.data.list)
+          console.log(data.data)
           this.playList = data.data.list
         }
       })
@@ -76,7 +88,10 @@ export default {
         this.$refs.scroll.refresh()
         this.checkLoaded = true
       }
-    }
+    },
+    ...mapMutations({
+      setDisc: 'SET_DISC'
+    })
   }
 }
 </script>

@@ -17,3 +17,6 @@ export const currentSong = (state) => {
   console.log(state.playList[state.currentIndex])
   return state.playList[state.currentIndex] // 注：此处为state而不是this
 }
+
+export const disc = state => state.disc
+export const topinfo = state => state.topinfo

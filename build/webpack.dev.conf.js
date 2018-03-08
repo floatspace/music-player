@@ -72,11 +72,69 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       })
       // 获取全部推荐歌单数据
       app.get('/api/getPlayList', function(req, res) {        
-        var url = 'http://ustbhuangyi.com/music/api/getDiscList?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=json&platform=yqq&hostUin=0&sin=0&ein=29&sortId=5&needNewCode=0&categoryId=10000000&rnd=0.2196648602709228'
+        let url = 'http://ustbhuangyi.com/music/api/getDiscList?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=json&platform=yqq&hostUin=0&sin=0&ein=29&sortId=5&needNewCode=0&categoryId=10000000&rnd=0.2196648602709228'
         axios.get(url).then((response) => {
           res.json(response.data)
         }).catch((e) => {
           console.log(e)
+        })
+      })
+      // 获取推荐歌单数据
+      app.get('/api/getCdinfo', (req, res) => {
+        let url = 'http://ustbhuangyi.com/music/api/getCdInfo?g_tk=1928093487&inCharset=utf-8&outCharset=utf-8&notice=0&format=jsonp&disstid='+ req.query.disstid +'&type=1&json=1&utf8=1&onlysong=0&platform=yqq&hostUin=0&needNewCode=0'
+        axios.get(url).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 获取排行榜排名
+      app.get('/api/getRank', (req, res) => {
+        let url = 'https://c.y.qq.com/v8/fcg-bin/fcg_myqq_toplist.fcg?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&_=1520336592520'
+        axios.get(url, {
+          headers: {
+            origin: 'https://m.y.qq.com',
+            referer: 'https://m.y.qq.com'
+          },
+        }).then((res2) => {
+          res.json(res2.data)
+        })
+      })
+      // 获取排行榜榜单详情
+      app.get('/api/getTopList', (req, res) => {
+        let url =`https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&tpl=3&page=detail&type=top&topid=${req.query.topid}&_=1520341006093`
+        axios.get(url, {
+          headers: {
+            origin: 'https://y.qq.com',
+            referer: `https://y.qq.com/w/toplist.html?ADTAG=myqq&from=myqq&channel=10007100&id=${req.query.topid}&type=top`
+          }
+        }).then((res2) => {
+          res.json(res2.data)
+        })
+      })
+      // 搜索查询
+      app.get('/api/searchKey', (req, res) => {
+        let params = req.query
+        let url = `https://c.y.qq.com/soso/fcgi-bin/search_for_qq_cp?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&w=${params.w}&zhidaqu=1&catZhida=1&t=0&flag=1&ie=utf-8&sem=1&aggr=0&perpage=${params.perPage}&n=${params.perPage}&p=${params.curPage}&remoteplace=txt.mqq.all&_=1520512867671`
+        axios.get(url, {
+          headers: {
+            origin: 'https://m.y.qq.com',
+            referer: 'https://m.y.qq.com/'
+          }
+        }).then((res2) => {
+          res.json(res2.data)
+        })
+      })
+      // 热门搜索关键词
+      app.get('/api/getHotKey', (req, res) => {
+        let url = 'https://c.y.qq.com/splcloud/fcgi-bin/gethotkey.fcg?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&_=1520519732352'
+        axios.get(url, {
+          headers: {
+            origin: 'https://m.y.qq.com',
+            referer: 'https://m.y.qq.com/'
+          }
+        }).then((res2) => {
+          res.json(res2.data)
         })
       })
     }
