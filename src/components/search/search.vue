@@ -4,24 +4,37 @@
       <searchbox @search="searchHandler" ref="searchBox"></searchbox>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-if="!query">
-      <div class="shortcut">
-        <div class="hot-key">
-          <h1 class="title">热门搜索</h1>
-          <ul>
-            <li v-for="(item, i) in hotKeys" :key="i" class="item">
-              <span @click="searchHot" v-html="item.k"></span>
-            </li>
-          </ul>
+      <scroll class="shortcut"  :data="searchHistory">
+        <div>
+          <div class="hot-key">
+            <h1 class="title">热门搜索</h1>
+            <ul>
+              <li v-for="(item, i) in hotKeys" :key="i" class="item">
+                <span @click="searchHot(item.k)" v-html="item.k"></span>
+              </li>
+            </ul>
+          </div>
+          <div class="search-history" v-if="searchHistory.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <span class="clear" @click="deleteAll">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
+            <searchList :searches="searchHistory" @select="searchHot" @delete="deleteOne"></searchList>
+          </div>
         </div>
-      </div>
+      </scroll>
     </div>
     <div class="search-result" ref="searchResult" v-show="query">
-      <suggest :query="query" :showSinger="showSinger"></suggest>
+      <suggest :query="query" :showSinger="showSinger" @listScroll="inputBlur"></suggest>
     </div>
     <router-view></router-view>
   </div>
 </template>
 <script>
+import scroll from '@/base/scroll/scroll'
+import localforage from 'localforage'
 import searchbox from '@/base/searchbox/searchbox'
 import searchList from '@/base/search-list/search-list'
 import suggest from '@/components/suggest/suggest'
@@ -31,26 +44,51 @@ export default {
   components: {
     searchbox,
     searchList,
-    suggest
+    suggest,
+    scroll
   },
   data() {
     return {
       query: '',
       showSinger: true,
-      hotKeys: []
+      hotKeys: [],
+      searchHistory: []
     }
   },
   created() {
     this._getHotKey()
+    localforage.getItem('_music_history').then((val) => {
+      this.searchHistory = val
+    })
   },
   methods: {
+    inputBlur() {
+      this.$refs.searchBox.$refs.query.blur()
+    },
     searchHandler(query) {
       this.query = query
+      if (!query) {
+        return
+      }
+      this.upateSearchHistory(query)
     },
-    searchHot(event) {
-      const hotKey = event.target.innerHTML
+    searchHot(hotKey) {
       this.query = hotKey
       this.$refs.searchBox.setVal(hotKey)
+    },
+    upateSearchHistory(key) {
+      let _index = this.searchHistory.indexOf(key)
+      if (_index > -1) {
+        this.searchHistory.splice(_index, 1)
+      }
+      this.searchHistory.push(key)
+    },
+    deleteOne(key) {
+      let _index = this.searchHistory.indexOf(key)
+      this.searchHistory.splice(_index, 1)
+    },
+    deleteAll() {
+      this.searchHistory = []
     },
     _getHotKey() {
       getHotKey().then((data) => {
@@ -63,6 +101,9 @@ export default {
       if (!newVal) {
         return false
       }
+    },
+    searchHistory(newArray) {
+      localforage.setItem('_music_history', newArray)
     }
   }
 }

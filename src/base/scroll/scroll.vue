@@ -22,6 +22,14 @@ export default {
     listenScroll: {
       type: Boolean,
       default: false
+    },
+    pullUp: {
+      type: Boolean,
+      default: false
+    },
+    beforeScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -42,6 +50,20 @@ export default {
       if (this.listenScroll) {
         this.scroll.on('scroll', (pos) => {
           this.$emit('scroll', pos)
+        })
+      }
+      // 下拉刷新
+      if (this.pullUp) {
+        this.scroll.on('scrollEnd', () => {
+          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+            this.$emit('scrollEnd')
+          }
+        })
+      }
+      // 开始滚动前触发(用于搜索框触发blur，手机虚拟键盘隐藏)
+      if (this.beforeScroll) {
+        this.scroll.on('beforeScrollStart', () => {
+          this.$emit('beforeScroll')
         })
       }
     },

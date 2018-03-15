@@ -38,19 +38,25 @@ export default {
       }
       getSongs(this.singer.id).then((res) => {
         if (res.code === ERROR_OK) {
-          this.songs = this._normallizeSongs(res.data.list)
-          console.log(this.songs)
+          this._normallizeSongs(res.data.list).then((data) => {
+            this.songs = data
+            console.log(this.songs)
+          })
         }
       })
     },
     _normallizeSongs(songs) {
-      let res = []
-      songs.forEach((song) => {
-        createSong(song.musicData).then((data) => {
-          res.push(data)
+      return new Promise((resolve) => {
+        let res = []
+        songs.forEach((song, i) => {
+          createSong(song.musicData).then((data) => {
+            res.push(data)
+            if (i === songs.length - 1) {
+              resolve(res)
+            }
+          })
         })
       })
-      return res
     }
   }
 }
